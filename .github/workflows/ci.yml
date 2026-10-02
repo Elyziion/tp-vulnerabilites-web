@@ -43,3 +43,39 @@ jobs:
         uses: github/codeql-action/analyze@v4
         with:
           category: "/language:python"
+
+
+  docker-trivy:
+    name: Docker et Trivy
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Recuperer le code du depot
+        uses: actions/checkout@v6
+
+      - name: Construire l'image Docker
+        run: docker build --pull -t tp-vulnerabilites-web:ci .
+
+      - name: Afficher les vulnerabilites HIGH et CRITICAL
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          scan-type: "image"
+          image-ref: "tp-vulnerabilites-web:ci"
+          scanners: "vuln"
+          vuln-type: "os,library"
+          format: "table"
+          severity: "HIGH,CRITICAL"
+          ignore-unfixed: false
+          exit-code: "0"
+
+      - name: Bloquer en presence de vulnerabilites CRITICAL
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          scan-type: "image"
+          image-ref: "tp-vulnerabilites-web:ci"
+          scanners: "vuln"
+          vuln-type: "os,library"
+          format: "table"
+          severity: "CRITICAL"
+          ignore-unfixed: false
+          exit-code: "1"
