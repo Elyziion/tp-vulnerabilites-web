@@ -1,0 +1,21 @@
+name: CI - TP Vulnerabilites Web
+
+on: [push]
+
+permissions:
+  contents: read
+
+jobs:
+  verification:
+    name: Verification du depot
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Recuperer le code du depot
+        uses: actions/checkout@v6
+
+      - name: Afficher les fichiers du projet
+        run: ls -la
+
+      - name: Confirmer l'execution
+        run: echo "Le workflow a ete declenche par un push."
