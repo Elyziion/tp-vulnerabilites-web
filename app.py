@@ -1,4 +1,6 @@
-from flask import Flask
+import sqlite3
+
+from flask import Flask, jsonify, request
 
 app = Flask(__name__)
 
@@ -18,6 +20,32 @@ def index():
         </body>
     </html>
     """
+
+
+@app.get("/recherche")
+def recherche():
+    nom = request.args.get("nom", "")
+    connexion = sqlite3.connect(":memory:")
+
+    try:
+        connexion.execute(
+            "CREATE TABLE produits (id INTEGER PRIMARY KEY, nom TEXT)"
+        )
+        connexion.executemany(
+            "INSERT INTO produits (nom) VALUES (?)",
+            [("clavier",), ("souris",), ("ecran",)],
+        )
+
+        # Vulnerabilite 
+        requete = f"SELECT id, nom FROM produits WHERE nom = '{nom}'"
+        resultats = connexion.execute(requete).fetchall()
+
+        return jsonify([
+            {"id": ligne[0], "nom": ligne[1]}
+            for ligne in resultats
+        ])
+    finally:
+        connexion.close()
 
 
 if __name__ == "__main__":
