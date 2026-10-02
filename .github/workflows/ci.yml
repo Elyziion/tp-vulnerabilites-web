@@ -19,3 +19,27 @@ jobs:
 
       - name: Confirmer l'execution
         run: echo "Le workflow a ete declenche par un push."
+
+  codeql:
+    name: Analyse CodeQL - Python
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      security-events: write
+
+    steps:
+      - name: Recuperer le code du depot
+        uses: actions/checkout@v6
+
+      - name: Initialiser CodeQL
+        uses: github/codeql-action/init@v4
+        with:
+          languages: python
+          build-mode: none
+          queries: security-extended
+
+      - name: Analyser le code
+        uses: github/codeql-action/analyze@v4
+        with:
+          category: "/language:python"
