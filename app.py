@@ -36,9 +36,9 @@ def recherche():
             [("clavier",), ("souris",), ("ecran",)],
         )
 
-        # Vulnerabilite 
-        requete = f"SELECT id, nom FROM produits WHERE nom = '{nom}'"
-        resultats = connexion.execute(requete).fetchall()
+        # Requete parametree : la valeur est transmise separement.
+        requete = "SELECT id, nom FROM produits WHERE nom = ?"
+        resultats = connexion.execute(requete, (nom,)).fetchall()
 
         return jsonify([
             {"id": ligne[0], "nom": ligne[1]}
